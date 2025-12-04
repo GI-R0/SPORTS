@@ -228,14 +228,6 @@ Si encuentras un bug o quieres añadir algo:
 4. Push (`git push origin feature/nueva-funcionalidad`)
 5. Abre un Pull Request
 
----
-
-## 📄 Licencia
-
-Este proyecto es de código abierto. Úsalo como quieras, pero sería cool que me des crédito 😊
-
----
-
 ## Autor
 
 Hecho con ☕ y 💙 por un desarrollador que ama el deporte
