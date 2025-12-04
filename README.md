@@ -2,10 +2,6 @@
 
 > Una app para reservar pistas deportivas. Simple, rápida y funcional.
 
-![Estado](https://img.shields.io/badge/estado-funcionando-brightgreen)
-![Versión](https://img.shields.io/badge/versión-1.0.0-blue)
-
----
 
 ## ¿Qué es esto?
 
@@ -121,41 +117,41 @@ sportifyclub/
 
 ### Para usuarios normales:
 
-- ✅ Ver todas las pistas disponibles
-- ✅ Buscar por nombre
-- ✅ Filtrar por deporte
-- ✅ Ver detalles de cada pista
-- ✅ Hacer reservas
-- ✅ Ver mis reservas
-- ✅ Cancelar reservas
+-  Ver todas las pistas disponibles
+-  Buscar por nombre
+-  Filtrar por deporte
+-  Ver detalles de cada pista
+-  Hacer reservas
+-  Ver mis reservas
+-  Cancelar reservas
 
 ### Para dueños de clubes:
 
-- ✅ Crear nuevas pistas
-- ✅ Editar pistas existentes
-- ✅ Eliminar pistas
-- ✅ Ver estadísticas
-- ✅ Gestionar reservas
+-  Crear nuevas pistas
+-  Editar pistas existentes
+-  Eliminar pistas
+-  Ver estadísticas
+-  Gestionar reservas
 
 ### Para administradores:
 
-- ✅ Todo lo anterior
-- ✅ Gestionar usuarios
-- ✅ Ver todas las pistas del sistema
+-  Todo lo anterior
+-  Gestionar usuarios
+-  Ver todas las pistas del sistema
 
 ---
 
-## 🎨 Diseño
+##  Diseño
 
-- **Azul Barça**: #004d98
-- **Rojo Barça**: #a50044
+- **Azul **: #004d98
+- **Rojo **: #a50044
 - **Dorado**: #edbb00
 
-Porque si vas a hacer algo, que al menos se vea bonito 😎
+Porque si vas a hacer algo, que al menos se vea bonito 
 
 ---
 
-## 🔐 Seguridad
+##  Seguridad
 
 - Las contraseñas se guardan encriptadas (bcrypt)
 - Usamos tokens JWT para el login
@@ -184,7 +180,7 @@ Si algo no funciona:
 
 ---
 
-## 📝 Variables de entorno necesarias
+##  Variables de entorno necesarias
 
 Crea un archivo `.env` en la carpeta `backend` con esto:
 
@@ -222,7 +218,7 @@ Este proyecto es ideal para:
 
 ---
 
-## 🤝 ¿Quieres contribuir?
+##  ¿Quieres contribuir?
 
 Si encuentras un bug o quieres añadir algo:
 
@@ -240,19 +236,13 @@ Este proyecto es de código abierto. Úsalo como quieras, pero sería cool que m
 
 ---
 
-## 👨‍💻 Autor
+## Autor
 
 Hecho con ☕ y 💙 por un desarrollador que ama el deporte
 
----
 
-## 🙏 Agradecimientos
 
-- A todos los que probaron la app y reportaron bugs
-- A Stack Overflow por salvarme la vida mil veces
-- Al café, mi mejor amigo durante el desarrollo
 
----
 
 **¿Dudas?** Abre un issue en GitHub o mándame un mensaje.
 
