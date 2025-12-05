@@ -9,7 +9,7 @@ const pistaSchema = new mongoose.Schema(
     },
     deporte: {
       type: String,
-      enum: ["Pádel", "Tenis", "Fútbol", "Baloncesto", "Voleibol"],
+      enum: ["Pádel", "Tenis", "Fútbol", "Fútbol 5", "Baloncesto", "Voleibol"],
       default: "Pádel",
     },
     precioHora: {
@@ -26,13 +26,14 @@ const pistaSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: [true, "La pista debe pertenecer a un club"],
-      index: true, 
+      index: true,
     },
     horariosDisponibles: {
       type: [String],
       required: [true, "Debe haber al menos un horario"],
       validate: {
-        validator: (arr) => arr.every(h => /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(h)),
+        validator: (arr) =>
+          arr.every((h) => /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(h)),
         message: "Formato de hora inválido (HH:MM)",
       },
       default: [],
@@ -47,7 +48,15 @@ const pistaSchema = new mongoose.Schema(
     },
     superficie: {
       type: String,
-      enum: ["Césped", "Arcilla", "Cemento", "Hierba artificial", "Madera"],
+      enum: [
+        "Césped",
+        "Arcilla",
+        "Cemento",
+        "Hierba artificial",
+        "Madera",
+        "Moqueta",
+        "Tierra batida",
+      ],
     },
   },
   { timestamps: true }

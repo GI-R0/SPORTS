@@ -70,6 +70,34 @@ Es como Booking, pero para pistas deportivas. Nada más, nada menos.
 
 ¡Listo! Ya debería estar funcionando.
 
+### Opción 2: Quiero datos de prueba
+
+Si quieres poblar la base de datos con datos iniciales (usuarios, pistas y reservas de ejemplo):
+
+1. Asegúrate de que MongoDB esté corriendo
+
+2. Desde la carpeta `backend`, ejecuta:
+
+   ```bash
+   npm run seed
+   ```
+
+Esto cargará automáticamente:
+
+- **30 usuarios** (5 clubs y 25 usuarios regulares)
+- **30 pistas deportivas** (Pádel, Tenis, Fútbol 5)
+- **100 reservas** relacionadas
+
+Los datos se cargan desde archivos CSV ubicados en `backend/data/`:
+
+- `usuarios.csv` - Usuarios y clubs
+- `pistas.csv` - Pistas deportivas
+- `reservas.csv` - Reservas de ejemplo
+
+**Nota:** El seeding elimina todos los datos existentes antes de insertar los nuevos.
+
+Para más detalles sobre el sistema de seeding, consulta `backend/src/seed/README.md`.
+
 ---
 
 ## ¿Qué tecnologías usa?
@@ -77,6 +105,10 @@ Es como Booking, pero para pistas deportivas. Nada más, nada menos.
 **Frontend:**
 
 - React (para la interfaz)
+- **Hooks Avanzados:**
+  - `useContext` - Autenticación global
+  - `useReducer` - Gestión compleja de reservas
+  - Custom Hooks - Validaciones y lógica reutilizable
 - Vite (para que cargue rápido)
 - CSS vanilla (con variables para los colores del Barça 💙❤️)
 
@@ -85,35 +117,37 @@ Es como Booking, pero para pistas deportivas. Nada más, nada menos.
 - Node.js + Express (el servidor)
 - MongoDB (la base de datos)
 - JWT (para el login)
+- **Seeding desde CSV** - Población de datos con fs de Node.js
 
 **Extras:**
 
 - Cloudinary (para subir imágenes de las pistas)
 - Axios (para conectar frontend con backend)
+- csv-parser (para leer archivos CSV)
 
----
+## Base de Datos y Modelos
 
-## ¿Cómo está organizado?
+SportifyClub utiliza **MongoDB** con **Mongoose** como ODM.
 
-```
-sportifyclub/
-├── backend/              # El servidor
-│   ├── src/
-│   │   ├── controllers/  # La lógica de negocio
-│   │   ├── models/       # Los esquemas de datos
-│   │   ├── routes/       # Las rutas de la API
-│   │   └── app.js        # El archivo principal
-│   └── package.json
-│
-└── frontend/             # La interfaz
-    └── sportifyclub-frontend/
-        ├── src/
-        │   ├── pages/    # Las páginas (Home, Pistas, etc.)
-        │   ├── components/ # Componentes reutilizables
-        │   ├── styles/   # Los estilos CSS
-        │   └── App.jsx   # El componente principal
-        └── package.json
-```
+### Colecciones (3 en total)
+
+1. **users** - Usuarios, clubs y administradores
+2. **pistas** - Pistas deportivas
+3. **reservas** - Reservas de pistas
+
+**Características:**
+
+- 3 colecciones relacionadas (cumple requisito de 2 + usuarios)
+- Relaciones mediante ObjectId y ref
+- Validaciones completas (enum, regex, rangos)
+- Índices optimizados para búsquedas rápidas
+- Middleware para encriptación de contraseñas
+- Índice compuesto único para evitar reservas duplicadas
+
+**Documentación completa:**
+
+- `backend/MODELOS_BASE_DATOS.md` - Schemas detallados
+- `backend/DIAGRAMA_RELACIONES.md` - Diagramas y queries
 
 ---
 
@@ -121,41 +155,41 @@ sportifyclub/
 
 ### Para usuarios normales:
 
-- ✅ Ver todas las pistas disponibles
-- ✅ Buscar por nombre
-- ✅ Filtrar por deporte
-- ✅ Ver detalles de cada pista
-- ✅ Hacer reservas
-- ✅ Ver mis reservas
-- ✅ Cancelar reservas
+- Ver todas las pistas disponibles
+- Buscar por nombre
+- Filtrar por deporte
+- Ver detalles de cada pista
+- Hacer reservas
+- Ver mis reservas
+- Cancelar reservas
 
 ### Para dueños de clubes:
 
-- ✅ Crear nuevas pistas
-- ✅ Editar pistas existentes
-- ✅ Eliminar pistas
-- ✅ Ver estadísticas
-- ✅ Gestionar reservas
+- Crear nuevas pistas
+- Editar pistas existentes
+- Eliminar pistas
+- Ver estadísticas
+- Gestionar reservas
 
 ### Para administradores:
 
-- ✅ Todo lo anterior
-- ✅ Gestionar usuarios
-- ✅ Ver todas las pistas del sistema
+- Todo lo anterior
+- Gestionar usuarios
+- Ver todas las pistas del sistema
 
 ---
 
-## 🎨 Diseño
+## Diseño
 
-- **Azul Barça**: #004d98
-- **Rojo Barça**: #a50044
-- **Dorado**: #edbb00
+- #004d98
+- #a50044
+- #edbb00
 
 Porque si vas a hacer algo, que al menos se vea bonito 😎
 
 ---
 
-## 🔐 Seguridad
+## Seguridad
 
 - Las contraseñas se guardan encriptadas (bcrypt)
 - Usamos tokens JWT para el login
@@ -184,7 +218,7 @@ Si algo no funciona:
 
 ---
 
-## 📝 Variables de entorno necesarias
+## Variables de entorno necesarias
 
 Crea un archivo `.env` en la carpeta `backend` con esto:
 
@@ -222,7 +256,7 @@ Este proyecto es ideal para:
 
 ---
 
-## 🤝 ¿Quieres contribuir?
+## ¿Quieres contribuir?
 
 Si encuentras un bug o quieres añadir algo:
 
@@ -234,25 +268,15 @@ Si encuentras un bug o quieres añadir algo:
 
 ---
 
-## 📄 Licencia
+## Licencia
 
 Este proyecto es de código abierto. Úsalo como quieras, pero sería cool que me des crédito 😊
 
 ---
 
-## 👨‍💻 Autor
+## Autor
 
 Hecho con ☕ y 💙 por un desarrollador que ama el deporte
-
----
-
-## 🙏 Agradecimientos
-
-- A todos los que probaron la app y reportaron bugs
-- A Stack Overflow por salvarme la vida mil veces
-- Al café, mi mejor amigo durante el desarrollo
-
----
 
 **¿Dudas?** Abre un issue en GitHub o mándame un mensaje.
 

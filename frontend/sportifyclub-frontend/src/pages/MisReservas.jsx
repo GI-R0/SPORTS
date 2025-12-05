@@ -1,29 +1,84 @@
 import { useAuth } from "../hooks/useAuth";
+import { useReservas } from "../context/ReservaContext";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../styles/MisReservas.css";
 
 export default function MisReservas() {
   const { user } = useAuth();
 
-  const [reservas] = useState([
-    {
-      id: "R001",
-      pista: "Pista 1 - Club Central",
-      fecha: "22 dic 2025",
-      hora: "18:00 - 19:30",
-      precio: "28€",
-      estado: "Confirmada",
-    },
-    {
-      id: "R002",
-      pista: "Pista VIP - Sport Elite",
-      fecha: "25 dic 2025",
-      hora: "10:00 - 11:30",
-      precio: "35€",
-      estado: "Pendiente",
-    },
-  ]);
+  const {
+    reservas,
+    loading,
+    error,
+    fetchReservas,
+    deleteReserva,
+    filterByStatus,
+    sortReservas,
+    resetFilters,
+    filters,
+  } = useReservas();
+
+  const [selectedFilter, setSelectedFilter] = useState("all");
+  const [sortOrder, setSortOrder] = useState("asc");
+
+  useEffect(() => {
+    fetchReservas();
+  }, [fetchReservas]);
+
+  const handleFilterChange = (status) => {
+    setSelectedFilter(status);
+    filterByStatus(status);
+  };
+
+  const handleSortChange = () => {
+    const newOrder = sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newOrder);
+    sortReservas("fecha", newOrder);
+  };
+
+  const handleCancelReserva = async (id) => {
+    if (window.confirm("¿Estás seguro de que quieres cancelar esta reserva?")) {
+      const result = await deleteReserva(id);
+      if (result.success) {
+        alert("Reserva cancelada exitosamente");
+      } else {
+        alert(result.error || "Error al cancelar la reserva");
+      }
+    }
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("es-ES", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="mis-reservas-page">
+        <div className="loading-container">
+          <p>Cargando reservas...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mis-reservas-page">
+        <div className="error-container">
+          <p className="error-message">{error}</p>
+          <button onClick={fetchReservas} className="btn-retry">
+            Reintentar
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mis-reservas-page">
@@ -35,41 +90,114 @@ export default function MisReservas() {
           </p>
         </div>
 
+        {reservas.length > 0 && (
+          <div className="reservas-controls">
+            <div className="filter-buttons">
+              <button
+                className={`filter-btn ${
+                  selectedFilter === "all" ? "active" : ""
+                }`}
+                onClick={() => handleFilterChange("all")}
+              >
+                Todas
+              </button>
+              <button
+                className={`filter-btn ${
+                  selectedFilter === "confirmada" ? "active" : ""
+                }`}
+                onClick={() => handleFilterChange("confirmada")}
+              >
+                Confirmadas
+              </button>
+              <button
+                className={`filter-btn ${
+                  selectedFilter === "cancelada" ? "active" : ""
+                }`}
+                onClick={() => handleFilterChange("cancelada")}
+              >
+                Canceladas
+              </button>
+            </div>
+
+            <div className="sort-controls">
+              <button onClick={handleSortChange} className="sort-btn">
+                Ordenar por fecha {sortOrder === "asc" ? "↑" : "↓"}
+              </button>
+              {filters.status !== "all" && (
+                <button onClick={resetFilters} className="reset-btn">
+                  Limpiar filtros
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
         {reservas.length === 0 ? (
           <div className="reservas-empty">
             <p className="empty-icon">🎾</p>
-            <h3 className="empty-title">Aún no tienes reservas</h3>
-            <p className="empty-desc">¡Es hora de reservar tu primera pista!</p>
-            <Link to="/pistas" className="btn-search">
-              Buscar pistas
-            </Link>
+            <h3 className="empty-title">
+              {filters.status !== "all"
+                ? `No tienes reservas ${filters.status}s`
+                : "Aún no tienes reservas"}
+            </h3>
+            <p className="empty-desc">
+              {filters.status !== "all" ? (
+                <button onClick={resetFilters} className="btn-search">
+                  Ver todas las reservas
+                </button>
+              ) : (
+                <>
+                  ¡Es hora de reservar tu primera pista!
+                  <Link to="/pistas" className="btn-search">
+                    Buscar pistas
+                  </Link>
+                </>
+              )}
+            </p>
           </div>
         ) : (
           <div className="reservas-grid">
             {reservas.map((reserva) => (
-              <div key={reserva.id} className="reserva-card">
+              <div key={reserva._id} className="reserva-card">
                 <div className="reserva-info">
-                  <h3>{reserva.pista}</h3>
-                  <p className="reserva-id">Reserva #{reserva.id}</p>
+                  <h3>{reserva.pista?.nombre || "Pista"}</h3>
+                  <p className="reserva-id">Reserva #{reserva._id.slice(-6)}</p>
                 </div>
 
                 <div className="reserva-time">
-                  <p className="reserva-date">{reserva.fecha}</p>
-                  <p className="reserva-hours">{reserva.hora}</p>
+                  <p className="reserva-date">{formatDate(reserva.fecha)}</p>
+                  <p className="reserva-hours">
+                    {reserva.hora} ({reserva.duracion || 1.5}h)
+                  </p>
                 </div>
 
                 <div className="reserva-status">
-                  <p className="reserva-price">{reserva.precio}</p>
+                  <p className="reserva-price">{reserva.total}€</p>
                   <span
                     className={`status-badge ${
-                      reserva.estado === "Confirmada" ? "confirmed" : "pending"
+                      reserva.estado === "confirmada" ? "confirmed" : "pending"
                     }`}
                   >
                     {reserva.estado}
                   </span>
                 </div>
 
-                <button className="btn-details">Ver detalles</button>
+                <div className="reserva-actions">
+                  <Link
+                    to={`/pistas/${reserva.pista?._id}`}
+                    className="btn-details"
+                  >
+                    Ver pista
+                  </Link>
+                  {reserva.estado === "confirmada" && (
+                    <button
+                      onClick={() => handleCancelReserva(reserva._id)}
+                      className="btn-cancel"
+                    >
+                      Cancelar
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
