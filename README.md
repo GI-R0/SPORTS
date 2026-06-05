@@ -897,8 +897,8 @@ Este proyecto está bajo la **Licencia MIT**. Ver archivo `LICENSE` para más de
 ¿Preguntas o sugerencias?
 
 - **GitHub Issues**: [Abrir issue](https://github.com/GI-R0/SPORTS/issues)
-- **Email**: Tu email aquí
-- **LinkedIn**: Tu perfil
+- **Email**: ggimenezlima@gmail.com
+
 
 ---
 
