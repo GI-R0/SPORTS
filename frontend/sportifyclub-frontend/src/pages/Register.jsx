@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import API from "../api/axiosConfig";
+import { useAuth } from "../hooks/useAuth";
 import { Eye, EyeOff } from "lucide-react";
 import "../styles/Auth.css";
 
 export default function Register() {
+  const { register } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nombre: "",
     email: "",
@@ -15,7 +17,6 @@ export default function Register() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -23,6 +24,20 @@ export default function Register() {
       [e.target.name]: e.target.value,
     });
   };
+
+  // Password validation helper
+  const validatePassword = (pwd) => {
+    return {
+      length: pwd.length >= 8,
+      upper: /[A-Z]/.test(pwd),
+      lower: /[a-z]/.test(pwd),
+      number: /[0-9]/.test(pwd),
+      special: /[@$!%*?&]/.test(pwd),
+    };
+  };
+
+  const passwordValidation = validatePassword(formData.password);
+  const isPasswordValid = Object.values(passwordValidation).every(v => v);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,19 +53,9 @@ export default function Register() {
       return;
     }
 
-    if (formData.password.length < 8) {
-      setError("La contraseña debe tener al menos 8 caracteres");
-      return;
-    }
-
-    const hasUpper = /[A-Z]/.test(formData.password);
-    const hasLower = /[a-z]/.test(formData.password);
-    const hasNumber = /[0-9]/.test(formData.password);
-    const hasSpecial = /[@$!%*?&]/.test(formData.password);
-
-    if (!hasUpper || !hasLower || !hasNumber || !hasSpecial) {
+    if (!isPasswordValid) {
       setError(
-        "La contraseña debe incluir mayúscula, minúscula, número y carácter especial",
+        "La contraseña debe incluir mayúscula, minúscula, número y carácter especial"
       );
       return;
     }
@@ -58,17 +63,15 @@ export default function Register() {
     setLoading(true);
 
     try {
-      await API.post("/auth/register", {
-        name: formData.nombre.trim(),
-        email: formData.email.toLowerCase().trim(),
-        password: formData.password,
-      });
+      // Register and auto-login
+      await register(
+        formData.nombre.trim(),
+        formData.email.toLowerCase().trim(),
+        formData.password
+      );
 
-      navigate("/login", {
-        state: {
-          message: "¡Cuenta creada con éxito! Ya puedes iniciar sesión.",
-        },
-      });
+      // Redirect to profile after successful registration and login
+      navigate("/perfil", { replace: true });
     } catch (err) {
       const responseData = err.response?.data;
       let mensaje = "Error al crear la cuenta";
@@ -141,9 +144,9 @@ export default function Register() {
                     value={formData.password}
                     onChange={handleChange}
                     className="form-input"
-                    placeholder="Mínimo 6 caracteres"
+                    placeholder="Mínimo 8 caracteres (mayúscula, minúscula, número, especial)"
                     required
-                    minLength="6"
+                    minLength="8"
                     disabled={loading}
                     style={{ paddingRight: "40px" }}
                   />
@@ -166,6 +169,31 @@ export default function Register() {
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
                 </div>
+                
+                {/* Password requirements helper */}
+                {formData.password && (
+                  <div style={{
+                    marginTop: "0.5rem",
+                    fontSize: "0.875rem",
+                    color: "var(--gray-600)"
+                  }}>
+                    <div style={{ color: passwordValidation.length ? "#16a34a" : "#dc2626" }}>
+                      {passwordValidation.length ? "✓" : "✗"} 8+ caracteres
+                    </div>
+                    <div style={{ color: passwordValidation.upper ? "#16a34a" : "#dc2626" }}>
+                      {passwordValidation.upper ? "✓" : "✗"} Mayúscula
+                    </div>
+                    <div style={{ color: passwordValidation.lower ? "#16a34a" : "#dc2626" }}>
+                      {passwordValidation.lower ? "✓" : "✗"} Minúscula
+                    </div>
+                    <div style={{ color: passwordValidation.number ? "#16a34a" : "#dc2626" }}>
+                      {passwordValidation.number ? "✓" : "✗"} Número
+                    </div>
+                    <div style={{ color: passwordValidation.special ? "#16a34a" : "#dc2626" }}>
+                      {passwordValidation.special ? "✓" : "✗"} Carácter especial (@$!%*?&)
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="form-group">
@@ -203,7 +231,11 @@ export default function Register() {
                 </div>
               </div>
 
-              <button type="submit" disabled={loading} className="btn-submit">
+              <button 
+                type="submit" 
+                disabled={loading || !isPasswordValid} 
+                className="btn-submit"
+              >
                 {loading ? (
                   <span className="loading-content">
                     <svg className="spinner" viewBox="0 0 24 24">
@@ -249,3 +281,4 @@ export default function Register() {
     </div>
   );
 }
+
